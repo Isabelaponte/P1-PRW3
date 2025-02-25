@@ -30,6 +30,15 @@ public class Aluno {
         this.nota3 = nota3;
     }
 
+    public Aluno(String nome, String ra, String email, BigDecimal nota1, BigDecimal nota2, BigDecimal nota3) {
+        this.nome = nome;
+        this.ra = ra;
+        this.email = email;
+        this.nota1 = nota1;
+        this.nota2 = nota2;
+        this.nota3 = nota3;
+    }
+
     public Long getId() {
         return id;
     }
@@ -81,4 +90,16 @@ public class Aluno {
     public void setRa(String ra) {
         this.ra = ra;
     }
+
+    @Override
+    public String toString() {
+        return "* ALUNO *\n" +
+                "Nome: " + nome + "\n" +
+                "RA: " + ra + "\n" +
+                "Email: " + email + "\n" +
+                "Nota 1: " + nota1 + "\n" +
+                "Nota 2: " + nota2 + "\n" +
+                "Nota 3: " + nota3;
+    }
+
 }
