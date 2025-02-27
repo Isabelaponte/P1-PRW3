@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import org.example.models.Aluno;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class AlunoDAO {
@@ -33,21 +34,20 @@ public class AlunoDAO {
         this.em.persist(aluno);
     }
 
-    public void update(String name) {
-        Aluno aluno = findOneByName(name);
+    public void update(Aluno aluno, String newNome, String newRa, String newEmail,
+                       BigDecimal nota1, BigDecimal nota2, BigDecimal nota3) {
 
-        if (aluno == null) return;
+        aluno.setNome(newNome);
+        aluno.setRa(newRa);
+        aluno.setEmail(newEmail);
+        aluno.setNota1(nota1);
+        aluno.setNota2(nota2);
+        aluno.setNota3(nota3);
 
+        em.merge(aluno);
     }
 
-    public void deleteByName(String name) {
-        Aluno aluno = findOneByName(name);
-
-        if (aluno == null) return;
-
+    public void deleteByName(Aluno aluno) {
         em.remove(aluno);
     }
-
-
-    public void listAlunos() {}
 }

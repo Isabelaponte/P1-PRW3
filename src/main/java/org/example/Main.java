@@ -9,7 +9,8 @@ import org.example.models.Aluno;
 import org.example.utils.JPAUtil;
 
 import java.math.BigDecimal;
-import java.util.Objects;
+import java.math.RoundingMode;
+import java.util.List;
 import java.util.Scanner;
 import java.util.logging.Level;
 
@@ -44,20 +45,17 @@ public class Main {
             int option = scanner.nextInt();
             scanner.nextLine();
 
-            if (option == 1) {
-                createScanner(scanner, alunoDAO, em);
-            } else if (option == 2) {
-                deleteScanner(scanner, alunoDAO, em);
-            } else if (option == 3) {
-                updateScanner(scanner, alunoDAO, em);
-            } else if (option == 4) {
-                System.out.println("option 4");
-            } else if (option == 5) {
-                System.out.println(alunoDAO.findAll());
-            }
-            else if (option == 6) {
-                System.out.println("Saindo...");
-                break;
+            switch (option) {
+                case 1 -> createScanner(scanner, alunoDAO, em);
+                case 2 -> deleteScanner(scanner, alunoDAO, em);
+                case 3 -> updateScanner(scanner, alunoDAO, em);
+                case 4 -> findOneByNameScanner(scanner, alunoDAO);
+                case 5 -> findAllWithMedia(alunoDAO);
+                case 6 -> {
+                    System.out.println("Saindo...");
+                    return;
+                }
+                default -> System.out.println("Opção inválida!");
             }
 
         }
@@ -65,7 +63,9 @@ public class Main {
     }
 
     public static Aluno findOneByNameScanner(Scanner scanner, AlunoDAO alunoDAO) {
-        System.out.println("Digite o nome:");
+        System.out.println("""
+                CONSULTAR ALUNO
+                Digite o nome:""");
         String nome = scanner.nextLine();
 
         try {
@@ -112,10 +112,11 @@ public class Main {
 
     public static void deleteScanner(Scanner scanner, AlunoDAO alunoDAO, EntityManager em) {
         Aluno aluno = findOneByNameScanner(scanner, alunoDAO);
+        if (aluno == null) return;
 
         try {
             em.getTransaction().begin();
-            alunoDAO.deleteByName(Objects.requireNonNull(aluno).getNome());
+            alunoDAO.deleteByName(aluno);
             em.getTransaction().commit();
             System.out.println("Aluno removido com sucesso!");
         } catch (Exception e) {
@@ -128,15 +129,61 @@ public class Main {
 
         Aluno aluno = findOneByNameScanner(scanner, alunoDAO);
 
+        if (aluno == null) return;
+
+        System.out.println("\nNOVOS DADOS:\n");
+        System.out.println("Digite o nome:");
+        String nome = scanner.nextLine();
+
+        System.out.println("Digite o RA:");
+        String ra = scanner.nextLine();
+
+        System.out.println("Digite o email: ");
+        String email = scanner.nextLine();
+
+        System.out.println("Digite a nota 1: ");
+        BigDecimal nota1 = BigDecimal.valueOf(scanner.nextInt());
+
+        System.out.println("Digite a nota 2: ");
+        BigDecimal nota2 = BigDecimal.valueOf(scanner.nextInt());
+
+        System.out.println("Digite a nota 3: ");
+        BigDecimal nota3 = BigDecimal.valueOf(scanner.nextInt());
+
         try {
             em.getTransaction().begin();
-            alunoDAO.update(Objects.requireNonNull(aluno).getNome());
+            alunoDAO.update(aluno, nome, email, ra, nota1, nota2, nota3);
             em.getTransaction().commit();
             System.out.println("Aluno alterado com sucesso!");
         } catch (Exception e) {
             em.getTransaction().rollback();
             System.out.println("Erro ao remover aluno.");
         }
+    }
+
+    public static void findAllWithMedia(AlunoDAO alunoDAO) {
+        List<Aluno> alunos = alunoDAO.findAll();
+
+        if (alunos.isEmpty()) {
+            System.out.println("Nenhum aluno Cadastrado");
+            return;
+        }
+
+        System.out.println("\nExibindo todos os alunos\n");
+
+        alunos.forEach(aluno -> {
+            BigDecimal media = aluno.getNota1().add(aluno.getNota2())
+                    .add(aluno.getNota3())
+                    .divide(BigDecimal.valueOf(3), 2, RoundingMode.HALF_UP);
+
+            String situation = media.compareTo(BigDecimal.valueOf(6)) >= 0 ? "Aprovado"
+                    : media.compareTo(BigDecimal.valueOf(4)) >= 0 ? "Recuperação" : "Reprovado";
+
+            System.out.println(aluno +
+                    "Média: " + media + "\n" +
+                    "Situação: " + situation + "\n");
+        });
+
     }
 
 
