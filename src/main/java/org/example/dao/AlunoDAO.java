@@ -14,10 +14,6 @@ public class AlunoDAO {
         this.em = em;
     }
 
-    public Aluno findById(Long id) {
-        return em.find(Aluno.class, id);
-    }
-
     public Aluno findOneByName(String name) throws NoResultException {
         String jpql = "SELECT a FROM Aluno a WHERE a.nome = ?1";
         return em.createQuery(jpql, Aluno.class)
