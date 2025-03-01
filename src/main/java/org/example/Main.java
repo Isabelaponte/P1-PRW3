@@ -2,6 +2,16 @@ package org.example;
 
 // TO RUN H2 DB: java -cp h2.jar org.h2.tools.Shell
 
+/* Isabela de Ponte
+    SC3035018
+
+    Para rodar o banco:
+     entrar na pasta 'data'
+     java -cp h2.jar org.h2.tools.Shell
+     URL: 'jdbc:h2:file:./alunos'
+     User: sa
+     Password:
+* */
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import org.example.dao.AlunoDAO;
